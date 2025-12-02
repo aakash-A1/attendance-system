@@ -3,247 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Clock System - Admin Access</title>
+    <title>Attendance System | Employee & Admin</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #3f51b5; /* Indigo Blue */
-            --secondary-color: #f5f5f5; /* Light Gray for backgrounds */
-            --text-dark: #333;
-            --text-light: #fff;
-            --punch-in-color: #4caf50; /* Green */
-            --punch-out-color: #f44336; /* Red */
-            --export-color: #00bcd4; /* Cyan */
-            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+            /* Palette */
+            --bg-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            --surface-color: rgba(255, 255, 255, 0.96);
+            --surface-translucent: rgba(255, 255, 255, 0.7);
+            
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --primary-color: #4f46e5;
+            
+            --success-color: #10b981;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+
+            --info-color: #0ea5e9;
+            
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            --radius: 12px;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
             margin: 0;
-            padding: 40px 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
+            align-items: flex-start; /* Align top for long admin lists */
+            padding: 40px 20px;
         }
 
         .container {
-            background-color: var(--text-light);
+            background-color: var(--surface-color);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-light);
-            width: 90%;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
             max-width: 900px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
         }
 
         h1 {
             text-align: center;
-            color: var(--primary-color);
-            font-weight: 700;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 15px;
-        }
-        
-        h2 {
-            text-align: left;
-            color: var(--primary-color);
-            font-weight: 400;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin: 0 0 30px 0;
+            letter-spacing: -0.025em;
         }
 
-        /* --- Tabs and Navigation --- */
+        h2 {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* --- Navigation Tabs --- */
         .tab-controls {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            <!-- border-bottom: 2px solid #ddd; -->
-        }
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            color: #777;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-            font-weight: 700;
+            margin-bottom: 30px;
+            background: #f3f4f6;
+            padding: 5px;
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* --- Employee/Public Interface Styles (Reused from previous code) --- */
-        .employee-selector {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #e8eaf6; 
-            border-radius: 8px;
-        }
-        .employee-selector label {
-            font-size: 1.1em;
-            font-weight: 400;
-            color: var(--text-dark);
-            margin-right: 15px;
-        }
-        #employee-select {
-            padding: 12px 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            min-width: 280px;
-            appearance: none; 
-            background-color: var(--text-light);
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 30px;
+            font-size: 0.95rem;
             cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-radius: 40px;
+            transition: all 0.2s ease;
         }
-        .punch-area {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 30px 0;
-        }
-        #employee-name-display {
-            margin: 10px 0 25px 0;
-            font-size: 1.8em;
+
+        .tab-btn.active {
+            background-color: white;
+            color: var(--primary-color);
             font-weight: 700;
-            color: var(--text-dark);
-            min-height: 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .punch-btn {
-            padding: 12px 30px;
-            margin: 10px;
+
+        .tab-content {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Forms & Inputs --- */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        select, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #fff;
+            color: var(--text-main);
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 700;
-            color: var(--text-light);
-            min-width: 150px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease-in-out;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.1s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .punch-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
-        .punch-btn.in {
-            background-color: var(--punch-in-color); 
+
+        .btn:active { transform: translateY(0); }
+
+        .btn-primary { background: var(--primary-color); }
+        .btn-success { background: var(--success-color); }
+        .btn-danger { background: var(--danger-color); }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #d1d5db;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            font-size: 0.85rem;
         }
-        .punch-btn.out {
-            background-color: var(--punch-out-color); 
+        .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #f9fafb;
         }
+
+        /* --- Employee Punch Area --- */
+        .punch-area {
+            text-align: center;
+            padding: 40px 0;
+            background: #f9fafb;
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            border: 1px dashed #e5e7eb;
+        }
+
+        #employee-name-display {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
+        /* --- Status Dashboard --- */
         #today-status-area {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius);
             padding: 20px;
-            margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            min-height: 100px; 
         }
+        
         .status-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px dashed #f0f0f0;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.95rem;
         }
+        .status-row:last-child { border-bottom: none; }
+        .status-time { font-family: monospace; font-size: 1.1em; font-weight: 600; }
 
-        /* --- Admin Specific Styles --- */
-        .admin-section {
-            padding: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            background-color: #fcfcfc;
-        }
-        .admin-section h3 {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            color: #555;
-        }
-        .admin-dashboard table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .admin-dashboard th, .admin-dashboard td {
-            border: 1px solid #e0e0e0;
-            padding: 10px;
-            text-align: left;
-            font-size: 0.9em;
-        }
-        .admin-dashboard th {
-            background-color: #f0f0f8;
-            color: var(--primary-color);
-        }
-        .admin-dashboard tr:nth-child(even) {
-            background-color: #fff;
-        }
-
-        /* Admin Login Screen */
-        .admin-login-screen {
+        /* --- Admin Login --- */
+        .admin-login-wrapper {
             max-width: 400px;
-            margin: 20px auto;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: var(--shadow-light);
+            margin: 40px auto;
             text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid #e5e7eb;
         }
-        .admin-login-screen input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .admin-login-screen button {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            margin-top: 15px;
-            padding: 12px;
-            font-weight: 700;
-            width: 100%;
-        }
+        .admin-login-wrapper input { margin-bottom: 15px; }
         .error-message {
-            color: var(--punch-out-color);
+            color: var(--danger-color);
+            font-size: 0.9rem;
             margin-top: 10px;
+            background: var(--danger-bg);
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* --- Admin Dashboard Tables --- */
+        .admin-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .record-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden; /* For rounded corners on table */
         }
         
-        hr {
-            border: 0;
-            height: 1px;
-            background-color: #e0e0e0;
-            margin: 25px 0;
+        .record-section-header {
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .record-section-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background-color: #fff;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            color: var(--text-main);
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f9fafb; }
+
+        /* Status Badges in Table */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-active { background: var(--success-bg); color: var(--success-text); }
+        .badge-completed { background: #f3f4f6; color: var(--text-muted); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .admin-header-row { flex-direction: column; gap: 10px; align-items: stretch; }
+            .record-section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            th, td { padding: 10px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Attendance Management Admin</h1>
+        <h1>Attendance System</h1>
 
         <div class="tab-controls">
             <!-- <button class="tab-btn active" data-tab="employee">Employee Clock</button> -->
-            <!-- <button class="tab-btn" data-tab="admin">Admin Dashboard</button> -->
+            <button class="tab-btn" data-tab="admin">Admin Portal</button>
         </div>
 
         <div id="employee-interface" class="tab-content">
-            <div class="employee-selector">
-                <label for="employee-select">SELECT EMPLOYEE:</label>
+            <div style="margin-bottom: 30px;">
+                <label for="employee-select">Identify Yourself</label>
                 <select id="employee-select">
-                    <option value="" disabled selected>-- Select an Employee --</option>
+                    <option value="" disabled selected>Select your name...</option>
                     <option value="Alice Johnson">Alice Johnson</option>
                     <option value="Bob Williams">Bob Williams</option>
                     <option value="Charlie Brown">Charlie Brown</option>
@@ -251,35 +343,50 @@
             </div>
 
             <div id="punch-area" class="punch-area">
-                <div id="employee-name-display"></div>
-                <button id="punch-in-btn" class="punch-btn in" style="display: none;">Punch In</button>
-                <button id="punch-out-btn" class="punch-btn out" style="display: none;">Punch Out</button>
+                <div id="employee-name-display">
+                    <span style="color: #9ca3af; font-size: 1rem;">Select a name above to begin</span>
+                </div>
+                <button id="punch-in-btn" class="btn btn-success" style="display: none;">
+                    <span>▶</span> Punch In
+                </button>
+                <button id="punch-out-btn" class="btn btn-danger" style="display: none;">
+                    <span>■</span> Punch Out
+                </button>
             </div>
-
-            <hr>
             
-            <h2>Today's Status ✨</h2>
+            <h2>Today's Activity</h2>
             <div id="today-status-area">
-                <p style="text-align: center; color: #777;">Select an employee to view today's times.</p>
+                <p style="text-align: center; color: var(--text-muted); font-style: italic;">No active session selected.</p>
             </div>
         </div>
 
         <div id="admin-interface" class="tab-content" style="display: none;">
             
-            <div id="admin-login-screen" class="admin-login-screen">
-                <h2>Admin Login</h2>
-                <input type="text" id="admin-username" placeholder="Username (admin)">
-                <input type="password" id="admin-password" placeholder="Password (pass)">
-                <button id="login-btn" class="punch-btn">Login</button>
+            <div id="admin-login-screen" class="admin-login-wrapper">
+                <h2>Admin Access</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Please verify your identity.</p>
+                
+                <div style="text-align: left;">
+                    <label>Username</label>
+                    <input type="text" id="admin-username" placeholder="admin">
+                    
+                    <label>Password</label>
+                    <input type="password" id="admin-password" placeholder="pass">
+                </div>
+                
+                <button id="login-btn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login</button>
                 <p id="login-error-message" class="error-message" style="display: none;">Invalid credentials.</p>
             </div>
 
             <div id="admin-dashboard" style="display: none;">
-                <div style="text-align: right; margin-bottom: 20px;">
-                    <button id="admin-logout-btn" class="punch-btn out" style="min-width: 100px; padding: 8px 15px;">Logout</button>
-                    <button id="export-all-csv-btn" class="punch-btn" style="background-color: var(--export-color); min-width: auto; padding: 8px 15px;">Download All History (CSV)</button>
+                <div class="admin-header-row">
+                    <h2>Dashboard</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="export-all-csv-btn" class="btn btn-outline">⬇ Export All Data</button>
+                        <button id="admin-logout-btn" class="btn btn-danger" style="font-size: 0.9rem;">Log Out</button>
+                    </div>
                 </div>
-                <h2>Employee Attendance Records</h2>
+
                 <div id="admin-records-container">
                     </div>
             </div>
@@ -288,16 +395,22 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Configuration & Constants ---
-            const ADMIN_USERNAME = 'admin'; // Hardcoded Admin Username
-            const ADMIN_PASSWORD = 'pass';  // Hardcoded Admin Password
-            const PUNCH_OUT_COLOR = '#f44336'; 
-            const PUNCH_IN_COLOR = '#4caf50'; 
+            // --- Configuration ---
+            const ADMIN_USERNAME = 'admin'; 
+            const ADMIN_PASSWORD = 'pass'; 
             const ALL_EMPLOYEES = ["Alice Johnson", "Bob Williams", "Charlie Brown"];
 
             // --- DOM Elements ---
-            const employeeInterface = document.getElementById('employee-interface');
-            const adminInterface = document.getElementById('admin-interface');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            
+            // Employee Elements
+            const employeeSelect = document.getElementById('employee-select');
+            const employeeNameDisplay = document.getElementById('employee-name-display');
+            const punchInBtn = document.getElementById('punch-in-btn');
+            const punchOutBtn = document.getElementById('punch-out-btn');
+            const todayStatusArea = document.getElementById('today-status-area');
+            
+            // Admin Elements
             const adminLoginScreen = document.getElementById('admin-login-screen');
             const adminDashboard = document.getElementById('admin-dashboard');
             const adminRecordsContainer = document.getElementById('admin-records-container');
@@ -305,22 +418,13 @@
             const logoutBtn = document.getElementById('admin-logout-btn');
             const exportAllCsvBtn = document.getElementById('export-all-csv-btn');
             const loginError = document.getElementById('login-error-message');
-            const tabButtons = document.querySelectorAll('.tab-btn');
             
-            // Employee Interface Elements (from previous code)
-            const employeeSelect = document.getElementById('employee-select');
-            const employeeNameDisplay = document.getElementById('employee-name-display');
-            const punchInBtn = document.getElementById('punch-in-btn');
-            const punchOutBtn = document.getElementById('punch-out-btn');
-            const todayStatusArea = document.getElementById('today-status-area');
-            
-            // --- State Variables ---
+            // --- State ---
             let selectedEmployee = null;
             let activePunch = null; 
             let isAdminLoggedIn = false;
 
-            // --- Utility Functions (Reusable) ---
-
+            // --- Storage & Logic ---
             const loadHistory = () => {
                 const historyJson = localStorage.getItem('punchHistory');
                 return historyJson ? JSON.parse(historyJson) : [];
@@ -332,72 +436,57 @@
 
             const formatTime = (date) => {
                 if (!date) return '-';
-                return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                return new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             };
 
             const formatDate = (date) => {
-                return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             };
             
             const isToday = (isoDate) => {
                 const today = new Date();
-                const dateToCheck = new Date(isoDate);
-                return today.getFullYear() === dateToCheck.getFullYear() &&
-                       today.getMonth() === dateToCheck.getMonth() &&
-                       today.getDate() === dateToCheck.getDate();
+                const d = new Date(isoDate);
+                return today.toDateString() === d.toDateString();
             };
 
             const checkActivePunch = (employeeName, history) => {
-                const lastEntry = history
-                    .filter(entry => entry.employee === employeeName)
-                    .pop();
-
-                if (lastEntry && !lastEntry.punchOutTime) {
-                    return lastEntry;
-                }
-                return null;
+                const lastEntry = history.filter(entry => entry.employee === employeeName).pop();
+                return (lastEntry && !lastEntry.punchOutTime) ? lastEntry : null;
             };
             
             const hasPunchedOutToday = (employeeName, history) => {
-                const todayEntries = history
-                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
-                
+                const todayEntries = history.filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
                 const lastEntry = todayEntries.pop();
                 return lastEntry && lastEntry.punchOutTime !== null;
             }
             
             const getTodayEntries = (employeeName, history) => {
-                return history
-                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
+                return history.filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
             };
 
-            // --- Employee UI Functions (Public Interface) ---
-
+            // --- Employee UI ---
             const updateUI = () => {
                 if (!selectedEmployee) {
-                    employeeNameDisplay.textContent = 'Please select an employee to start.';
+                    employeeNameDisplay.innerHTML = '<span style="color: #9ca3af; font-size: 1rem;">Select a name above to begin</span>';
                     punchInBtn.style.display = 'none';
                     punchOutBtn.style.display = 'none';
-                    todayStatusArea.innerHTML = '<p style="text-align: center; color: #777;">Select an employee to view today\'s times.</p>';
+                    todayStatusArea.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Select an employee to view status.</p>';
                     return;
                 }
 
                 const history = loadHistory(); 
                 const finishedToday = hasPunchedOutToday(selectedEmployee, history);
 
-                employeeNameDisplay.textContent = `Welcome, **${selectedEmployee}**!`;
+                employeeNameDisplay.innerHTML = `Welcome, <strong>${selectedEmployee}</strong>`;
 
                 if (activePunch) {
-                    // Employee is currently PUNCHED IN (Active session exists)
                     punchInBtn.style.display = 'none';
-                    punchOutBtn.style.display = 'block';
+                    punchOutBtn.style.display = 'inline-flex';
                 } else if (finishedToday) {
-                    // Employee is PUNCHED OUT and finished for today
                     punchInBtn.style.display = 'none';
                     punchOutBtn.style.display = 'none';
                 } else {
-                    // Ready to punch in
-                    punchInBtn.style.display = 'block';
+                    punchInBtn.style.display = 'inline-flex';
                     punchOutBtn.style.display = 'none';
                 }
                 
@@ -411,50 +500,42 @@
                 todayStatusArea.innerHTML = ''; 
                 
                 if (todayEntries.length === 0 && !finishedToday) {
-                    todayStatusArea.innerHTML = `<p style="text-align: center; color: ${PUNCH_OUT_COLOR};">Ready to punch in!</p>`;
+                    todayStatusArea.innerHTML = `<p style="text-align: center; color: var(--success-text); background: var(--success-bg); padding: 10px; border-radius: 8px;">Ready to start your shift!</p>`;
                     return;
                 }
                 
                 if (finishedToday) {
                     const lastEntry = todayEntries.pop();
-                    let punchInHtml = `
+                    todayStatusArea.innerHTML = `
                         <div class="status-row">
-                            <span class="status-label">Punch In Time:</span>
+                            <span>Started</span>
                             <span class="status-time">${formatTime(lastEntry.punchInTime)}</span>
-                        </div>`;
-
-                    let punchOutHtml = `
+                        </div>
                         <div class="status-row">
-                            <span class="status-label">Punch Out Time:</span>
-                            <span class="status-time" style="color: ${PUNCH_OUT_COLOR}; font-weight: 700;">${formatTime(lastEntry.punchOutTime)} (Finished)</span>
+                            <span>Finished</span>
+                            <span class="status-time" style="color: var(--danger-color);">${formatTime(lastEntry.punchOutTime)}</span>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <span class="badge badge-completed">Workday Complete</span>
                         </div>`;
-                    
-                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
 
                 } else if (activePunch) {
-                     let punchInHtml = `
+                     todayStatusArea.innerHTML = `
                         <div class="status-row">
-                            <span class="status-label">Punch In Time:</span>
+                            <span>Started</span>
                             <span class="status-time">${formatTime(activePunch.punchInTime)}</span>
-                        </div>`;
-
-                    let punchOutHtml = `
+                        </div>
                         <div class="status-row">
-                            <span class="status-label">Punch Out Time:</span>
-                            <span class="status-time" style="color: ${PUNCH_IN_COLOR}; font-weight: 700;">ACTIVE (Need to Punch Out)</span>
+                            <span>Status</span>
+                            <span class="badge badge-active">Currently Active</span>
                         </div>`;
-                    
-                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
                 }
             };
-            
-            // --- Admin Logic & UI Functions ---
 
+            // --- Admin UI ---
             const groupHistoryByEmployee = (history) => {
                 return history.reduce((acc, entry) => {
-                    if (!acc[entry.employee]) {
-                        acc[entry.employee] = [];
-                    }
+                    if (!acc[entry.employee]) acc[entry.employee] = [];
                     acc[entry.employee].push(entry);
                     return acc;
                 }, {});
@@ -463,95 +544,105 @@
             const renderAdminDashboard = () => {
                 const history = loadHistory();
                 const groupedHistory = groupHistoryByEmployee(history);
-                adminRecordsContainer.innerHTML = ''; // Clear container
+                adminRecordsContainer.innerHTML = ''; 
 
                 const allEmployeeNames = ALL_EMPLOYEES.sort();
 
+                if(history.length === 0) {
+                    adminRecordsContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">No records found in the system.</div>';
+                    return;
+                }
+
                 allEmployeeNames.forEach(employeeName => {
                     const employeeHistory = groupedHistory[employeeName] || [];
-                    
+                    if(employeeHistory.length === 0) return; // Skip empty employees
+
                     const sectionDiv = document.createElement('div');
-                    sectionDiv.className = 'admin-section';
+                    sectionDiv.className = 'record-section';
                     
-                    // Header and Export Button
                     sectionDiv.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3>${employeeName} Records (${employeeHistory.length} Total Entries)</h3>
-                            <button class="punch-btn export-single-btn" data-employee="${employeeName}" style="background-color: var(--export-color); font-size: 0.9em; min-width: auto; padding: 8px 15px;">
+                        <div class="record-section-header">
+                            <h3>${employeeName} <span style="color: var(--text-muted); font-weight: 400; font-size: 0.9em; margin-left: 5px;">(${employeeHistory.length} records)</span></h3>
+                            <button class="btn btn-outline export-single-btn" data-employee="${employeeName}" style="padding: 5px 12px; font-size: 0.8rem;">
                                 Export CSV
                             </button>
                         </div>
-                        <table data-employee-table="${employeeName}">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Punch In Time</th>
-                                    <th>Punch Out Time</th>
+                                    <th>In</th>
+                                    <th>Out</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                </tbody>
+                            <tbody></tbody>
                         </table>
                     `;
                     
                     const tbody = sectionDiv.querySelector('tbody');
                     
-                    // Render History Rows (newest first)
                     employeeHistory.slice().reverse().forEach(entry => {
                         const row = tbody.insertRow();
+                        const isFinished = !!entry.punchOutTime;
+                        
                         row.insertCell().textContent = formatDate(entry.punchInTime);
                         row.insertCell().textContent = formatTime(entry.punchInTime);
-                        row.insertCell().textContent = entry.punchOutTime ? formatTime(entry.punchOutTime) : 'ACTIVE';
+                        row.insertCell().textContent = entry.punchOutTime ? formatTime(entry.punchOutTime) : '-';
+                        
+                        // Status Badge Cell
+                        const statusCell = row.insertCell();
+                        const badge = document.createElement('span');
+                        badge.className = `badge ${isFinished ? 'badge-completed' : 'badge-active'}`;
+                        badge.textContent = isFinished ? 'Completed' : 'Active';
+                        statusCell.appendChild(badge);
                     });
 
                     adminRecordsContainer.appendChild(sectionDiv);
                 });
                 
-                // Attach listeners for newly created individual export buttons
-                document.querySelectorAll('.export-single-btn').forEach(button => {
-                    button.addEventListener('click', handleExportSingle);
+                document.querySelectorAll('.export-single-btn').forEach(btn => {
+                    btn.addEventListener('click', handleExportSingle);
                 });
             };
 
-            // Handles both Single Employee Export and All Employee Export
+            // --- Export Logic ---
             const handleExport = (employeeName = null) => {
                 const history = loadHistory();
                 let recordsToExport = history;
-                let fileName = "punch_history_full_" + new Date().toISOString().slice(0, 10) + ".csv";
+                let fileName = "attendance_full.csv";
 
                 if (employeeName) {
                     recordsToExport = history.filter(entry => entry.employee === employeeName);
-                    fileName = `${employeeName.replace(/\s/g, '_')}_history_${new Date().toISOString().slice(0, 10)}.csv`;
+                    fileName = `attendance_${employeeName.replace(/\s/g, '_')}.csv`;
                 }
 
                 if (recordsToExport.length === 0) {
-                    alert(`No data to export for ${employeeName || 'all employees'}!`);
+                    alert(`No data to export.`);
                     return;
                 }
 
-                const header = ["Date", "Employee", "Punch In Time", "Punch Out Time"].join(',');
-                
+                const header = ["Date", "Employee", "Punch In", "Punch Out", "Status"].join(',');
                 const csvRows = recordsToExport.map(entry => {
-                    const name = employeeName ? '' : entry.employee; // Only include name if exporting ALL
-                    const date = formatDate(entry.punchInTime);
-                    const punchIn = formatTime(entry.punchInTime);
-                    const punchOut = entry.punchOutTime ? formatTime(entry.punchOutTime) : 'N/A';
-                    
-                    // Determine which columns to export
-                    const columns = employeeName ? [date, punchIn, punchOut] : [date, entry.employee, punchIn, punchOut];
+                    const status = entry.punchOutTime ? 'Completed' : 'Active';
+                    const columns = [
+                        formatDate(entry.punchInTime),
+                        employeeName ? '' : entry.employee, // Skip name col if single export
+                        formatTime(entry.punchInTime),
+                        entry.punchOutTime ? formatTime(entry.punchOutTime) : 'N/A',
+                        status
+                    ].filter(val => val !== ''); 
                     
                     return columns.join(',');
                 });
 
-                const finalHeader = employeeName ? ["Date", "Punch In Time", "Punch Out Time"].join(',') : header;
+                const finalHeader = employeeName ? ["Date", "Punch In", "Punch Out", "Status"].join(',') : header;
                 const csvContent = finalHeader + '\n' + csvRows.join('\n');
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
-                
-                link.setAttribute("href", URL.createObjectURL(blob));
-                link.setAttribute("download", fileName);
-                
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -559,111 +650,24 @@
 
             const handleExportSingle = (e) => {
                 const employeeName = e.target.getAttribute('data-employee');
-                if (employeeName) {
-                    handleExport(employeeName);
-                }
+                if (employeeName) handleExport(employeeName);
             };
 
-            // --- Tab Switching Logic ---
+            // --- Interactions ---
 
-            const showTab = (tabId) => {
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.style.display = 'none';
-                });
-                document.getElementById(`${tabId}-interface`).style.display = 'block';
-
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-            };
-
-            // --- Admin Login/Logout ---
-
-            const handleLogin = () => {
-                const username = document.getElementById('admin-username').value;
-                const password = document.getElementById('admin-password').value;
-
-                if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                    isAdminLoggedIn = true;
-                    adminLoginScreen.style.display = 'none';
-                    adminDashboard.style.display = 'block';
-                    loginError.style.display = 'none';
-                    renderAdminDashboard(); // Load data on successful login
-                } else {
-                    loginError.style.display = 'block';
-                }
-            };
-
-            const handleLogout = () => {
-                isAdminLoggedIn = false;
-                adminLoginScreen.style.display = 'block';
-                adminDashboard.style.display = 'none';
-                document.getElementById('admin-username').value = '';
-                document.getElementById('admin-password').value = '';
-            };
-
-            // --- Event Handlers (Public Interface) ---
-
-            employeeSelect.addEventListener('change', (e) => {
-                selectedEmployee = e.target.value;
-                const history = loadHistory();
-                activePunch = checkActivePunch(selectedEmployee, history); 
-                updateUI();
-            });
-
-            punchInBtn.addEventListener('click', () => {
-                if (!selectedEmployee) return;
-
-                const history = loadHistory();
-                const now = new Date().toISOString();
-                
-                if (hasPunchedOutToday(selectedEmployee, history)) {
-                    alert(`${selectedEmployee} has already completed the workday today and cannot punch in again.`);
-                    return;
-                }
-
-                const newEntry = {
-                    id: Date.now(), 
-                    employee: selectedEmployee,
-                    punchInTime: now,
-                    punchOutTime: null 
-                };
-
-                history.push(newEntry);
-                saveHistory(history);
-
-                activePunch = newEntry; 
-                updateUI();
-            });
-
-            punchOutBtn.addEventListener('click', () => {
-                if (!selectedEmployee || !activePunch) return;
-
-                const history = loadHistory();
-                const now = new Date().toISOString();
-
-                const index = history.findIndex(entry => entry.id === activePunch.id);
-                if (index !== -1) {
-                    history[index].punchOutTime = now;
-                    saveHistory(history);
-
-                    activePunch = null; 
-                    updateUI();
-                }
-            });
-            
-            // --- Event Handlers (Admin Interface) ---
-            
-            loginBtn.addEventListener('click', handleLogin);
-            logoutBtn.addEventListener('click', handleLogout);
-            exportAllCsvBtn.addEventListener('click', () => handleExport(null)); 
-
-            // Handle switching between tabs
+            // Tabs
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
+                    // Update visual state
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    // Show Content
+                    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
                     const tabId = button.getAttribute('data-tab');
-                    showTab(tabId);
-                    
-                    // If switching to admin tab, check login status and refresh dashboard
+                    document.getElementById(`${tabId}-interface`).style.display = 'block';
+
+                    // Admin specific check
                     if (tabId === 'admin') {
                         if (isAdminLoggedIn) {
                             renderAdminDashboard();
@@ -675,9 +679,72 @@
                 });
             });
 
-            // --- Initialization ---
+            // Employee Actions
+            employeeSelect.addEventListener('change', (e) => {
+                selectedEmployee = e.target.value;
+                const history = loadHistory();
+                activePunch = checkActivePunch(selectedEmployee, history); 
+                updateUI();
+            });
+
+            punchInBtn.addEventListener('click', () => {
+                if (!selectedEmployee) return;
+                const history = loadHistory();
+                if (hasPunchedOutToday(selectedEmployee, history)) {
+                    alert("Shift already marked as complete for today.");
+                    return;
+                }
+                const newEntry = {
+                    id: Date.now(), 
+                    employee: selectedEmployee,
+                    punchInTime: new Date().toISOString(),
+                    punchOutTime: null 
+                };
+                history.push(newEntry);
+                saveHistory(history);
+                activePunch = newEntry; 
+                updateUI();
+            });
+
+            punchOutBtn.addEventListener('click', () => {
+                if (!selectedEmployee || !activePunch) return;
+                const history = loadHistory();
+                const index = history.findIndex(entry => entry.id === activePunch.id);
+                if (index !== -1) {
+                    history[index].punchOutTime = new Date().toISOString();
+                    saveHistory(history);
+                    activePunch = null; 
+                    updateUI();
+                }
+            });
+
+            // Admin Actions
+            loginBtn.addEventListener('click', () => {
+                const u = document.getElementById('admin-username').value;
+                const p = document.getElementById('admin-password').value;
+                if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+                    isAdminLoggedIn = true;
+                    adminLoginScreen.style.display = 'none';
+                    adminDashboard.style.display = 'block';
+                    loginError.style.display = 'none';
+                    renderAdminDashboard();
+                } else {
+                    loginError.style.display = 'block';
+                }
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                isAdminLoggedIn = false;
+                adminLoginScreen.style.display = 'block';
+                adminDashboard.style.display = 'none';
+                document.getElementById('admin-username').value = '';
+                document.getElementById('admin-password').value = '';
+            });
+
+            exportAllCsvBtn.addEventListener('click', () => handleExport(null)); 
+
+            // Initialize
             updateUI(); 
-            showTab('admin'); // Start on the employee interface
         });
     </script>
 </body>

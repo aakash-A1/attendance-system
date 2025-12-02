@@ -5,229 +5,400 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Limit Punch Clock</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #3f51b5; /* Indigo Blue */
-            --secondary-color: #f5f5f5; /* Light Gray for backgrounds */
-            --text-dark: #333;
-            --text-light: #fff;
-            --punch-in-color: #4caf50; /* Green */
-            --punch-out-color: #f44336; /* Red */
-            --export-color: #00bcd4; /* Cyan */
-            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+            /* Palette */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --surface-color: rgba(255, 255, 255, 0.95);
+            --bg-color: #f3f4f6;
+            
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            
+            --success-color: #10b981;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            
+            --danger-color: #ef4444;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius: 16px;
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            background-image: var(--primary-gradient);
+            background-attachment: fixed; /* Keeps gradient full height */
+            color: var(--text-main);
             margin: 0;
-            padding: 40px 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
         .container {
-            background-color: var(--text-light);
-            padding: 20px 40px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-light);
-            width: 90%;
-            max-width: 900px;
+            background-color: var(--surface-color);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 550px;
+            backdrop-filter: blur(10px); /* Glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        /* --- Header & Clock --- */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         h1 {
-            text-align: center;
-            color: var(--primary-color);
+            font-size: 1.5rem;
+            color: var(--text-main);
             font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.025em;
+        }
+
+        #live-clock {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #4f46e5;
+            font-variant-numeric: tabular-nums; /* Prevents jittering numbers */
+            margin-bottom: 5px;
+        }
+
+        #live-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* --- Input Section --- */
+        .input-group {
             margin-bottom: 30px;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 15px;
-        }
-        
-        h2 {
-            text-align: left;
-            color: var(--primary-color);
-            font-weight: 400;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            position: relative;
         }
 
-        /* Employee Selection Area */
-        .employee-selector {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #e8eaf6; 
-            border-radius: 8px;
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .employee-selector label {
-            font-size: 1.1em;
-            font-weight: 400;
-            color: var(--text-dark);
-            margin-right: 15px;
+        .select-wrapper {
+            position: relative;
         }
 
-        #employee-select {
-            padding: 12px 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            min-width: 280px;
-            appearance: none; 
-            background-color: var(--text-light);
+        /* Custom Dropdown Styling */
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background-color: #fff;
+            color: var(--text-main);
+            appearance: none; /* Remove default arrow */
             cursor: pointer;
+            transition: border-color 0.2s;
+            font-family: inherit;
         }
 
-        /* Punch Area */
-        .punch-area {
+        select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Custom Arrow */
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* --- Action Area --- */
+        .action-area {
             text-align: center;
-            margin-bottom: 0px;
-            padding: 0px 0;
+            min-height: 140px; /* Prevent layout jump */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        #employee-name-display {
-            margin: 10px 0 25px 0;
-            font-size: 1.8em;
-            font-weight: 700;
-            color: var(--text-dark);
-            min-height: 24px;
+        #employee-greeting {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
 
-        /* Buttons */
+        #employee-greeting.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Styling */
         .punch-btn {
-            padding: 12px 30px;
-            margin: 10px;
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 700;
-            color: var(--text-light);
-            min-width: 150px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease-in-out;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
         }
 
         .punch-btn:hover {
-            opacity: 0.9;
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .punch-btn.in {
-            background-color: var(--punch-in-color); 
+        .punch-btn:active {
+            transform: translateY(0);
         }
 
-        .punch-btn.out {
-            background-color: var(--punch-out-color); 
+        .btn-in {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-out {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* --- Dashboard / Status Area --- */
+        .dashboard {
+            margin-top: 30px;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .dashboard-header {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            padding: 10px;
+        }
+
+        /* Status Cards Grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-card.active {
+            border-color: var(--success-color);
+            background-color: #f0fdf4;
+        }
+
+        .status-card.finished {
+            border-color: var(--text-muted);
+            background-color: #f3f4f6;
+            opacity: 0.8;
+        }
+
+        .card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-time {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            margin-top: 15px;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .badge-active {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            animation: pulse 2s infinite;
+        }
+        
+        .badge-complete {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        /* --- Footer --- */
+        .footer-actions {
+            margin-top: 25px;
+            text-align: center;
         }
 
         #export-csv-btn {
-            background-color: var(--export-color);
-            margin-top: 15px;
-            margin-bottom: 10px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Today's Status Area */
-        #today-status-area {
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            min-height: 100px; 
-        }
-        
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px dashed #f0f0f0;
-        }
-        .status-row:last-child {
-            border-bottom: none;
-        }
-        
-        .status-label {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .status-time {
-            font-weight: 400;
-        }
-        
-        /* Horizontal Rule */
-        hr {
-            border: 0;
-            height: 1px;
-            background-color: #e0e0e0;
-            margin: 25px 0;
+        #export-csv-btn:hover {
+            border-color: #9ca3af;
+            color: var(--text-main);
+            background-color: white;
         }
 
-        /* Hidden History Table */
-        #history-area {
-            display: none; 
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .container { padding: 25px; }
+            .status-grid { grid-template-columns: 1fr; }
+            #live-clock { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>Attendance Tracker</h1>
+        <header>
+            <div id="live-clock">--:--:--</div>
+            <div id="live-date">Loading Date...</div>
+        </header>
         
-        <div class="employee-selector">
-            <label for="employee-select">SELECT EMPLOYEE:</label>
-            <select id="employee-select">
-                <option value="" disabled selected>-- Select an Employee --</option>
-                <option value="Alice Johnson">Alice Johnson</option>
-                <option value="Bob Williams">Bob Williams</option>
-                <option value="Charlie Brown">Charlie Brown</option>
-            </select>
-        </div>
-
-        <div id="punch-area" class="punch-area">
-            <div id="employee-name-display"></div>
-            <button id="punch-in-btn" class="punch-btn in" style="display: none;">Punch In</button>
-            <button id="punch-out-btn" class="punch-btn out" style="display: none;">Punch Out</button>
-        </div>
-
-        <!-- <hr> -->
+        <h1>Team Punch Clock</h1>
         
-        <h2>Today's Status ✨</h2>
-        <div id="today-status-area">
-            <p style="text-align: center; color: #777;">Select an employee to view today's times.</p>
+        <div class="input-group">
+            <label for="employee-select">Select Team Member</label>
+            <div class="select-wrapper">
+                <select id="employee-select">
+                    <option value="" disabled selected>Select an option...</option>
+                    <option value="Alice Johnson">Alice Johnson</option>
+                    <option value="Bob Williams">Bob Williams</option>
+                    <option value="Charlie Brown">Charlie Brown</option>
+                </select>
+            </div>
         </div>
 
-        <!-- <div style="text-align: right; margin-top: 20px;">
-            <button id="export-csv-btn" class="punch-btn" style="background-color: var(--export-color); font-size: 0.9em; min-width: auto; padding: 8px 15px;">Download Full History (CSV)</button>
+        <div class="action-area">
+            <div id="employee-greeting"></div>
+            
+            <button id="punch-in-btn" class="punch-btn btn-in" style="display: none;">
+                <span>▶</span> PUNCH IN
+            </button>
+            
+            <button id="punch-out-btn" class="punch-btn btn-out" style="display: none;">
+                <span>■</span> PUNCH OUT
+            </button>
+        </div>
+
+        <div class="dashboard">
+            <div class="dashboard-header">
+                <span>📅</span> Today's Activity
+            </div>
+            <div id="today-status-area">
+                <div class="empty-state">Select an employee to view status.</div>
+            </div>
+        </div>
+
+        <!-- <div class="footer-actions">
+            <button id="export-csv-btn">Download History (CSV)</button>
         </div> -->
-
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Color Definitions ---
-            const PUNCH_OUT_COLOR = '#f44336'; // Red
-            const PUNCH_IN_COLOR = '#4caf50'; // Green
+            // --- UI: Live Clock ---
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('live-clock').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+                document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
 
-            // --- DOM Elements ---
+            // --- Logic Variables ---
             const employeeSelect = document.getElementById('employee-select');
-            const employeeNameDisplay = document.getElementById('employee-name-display');
+            const employeeGreeting = document.getElementById('employee-greeting');
             const punchInBtn = document.getElementById('punch-in-btn');
             const punchOutBtn = document.getElementById('punch-out-btn');
             const todayStatusArea = document.getElementById('today-status-area');
             const exportBtn = document.getElementById('export-csv-btn');
 
-            // --- State Variables ---
             let selectedEmployee = null;
             let activePunch = null; 
 
-            // --- Utility Functions ---
+            // --- Logic Functions ---
 
             const loadHistory = () => {
                 const historyJson = localStorage.getItem('punchHistory');
@@ -239,91 +410,61 @@
             };
 
             const formatTime = (date) => {
-                if (!date) return '-';
+                if (!date) return '--:--';
                 return new Date(date).toLocaleTimeString('en-US', { 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit' 
-                });
-            };
-
-            const formatDate = (date) => {
-                return new Date(date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+                    hour: '2-digit', minute: '2-digit' 
                 });
             };
             
             const isToday = (isoDate) => {
                 const today = new Date();
                 const dateToCheck = new Date(isoDate);
-                // Compare Year, Month, Day only
-                return today.getFullYear() === dateToCheck.getFullYear() &&
-                       today.getMonth() === dateToCheck.getMonth() &&
-                       today.getDate() === dateToCheck.getDate();
+                return today.toDateString() === dateToCheck.toDateString();
             };
 
-            // Checks for any un-punched-out session
             const checkActivePunch = (employeeName, history) => {
-                const lastEntry = history
-                    .filter(entry => entry.employee === employeeName)
-                    .pop();
-
-                if (lastEntry && !lastEntry.punchOutTime) {
-                    return lastEntry;
-                }
-                return null;
+                const lastEntry = history.filter(entry => entry.employee === employeeName).pop();
+                return (lastEntry && !lastEntry.punchOutTime) ? lastEntry : null;
             };
             
-            // Checks if the employee has a completed PUNCH IN/PUNCH OUT pair today
             const hasPunchedOutToday = (employeeName, history) => {
-                // Find all today's entries for the employee
-                const todayEntries = history
-                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
-                
-                // If the last entry exists AND it has a punchOutTime, they have finished for the day.
+                const todayEntries = history.filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
                 const lastEntry = todayEntries.pop();
                 return lastEntry && lastEntry.punchOutTime !== null;
             }
             
             const getTodayEntries = (employeeName, history) => {
-                return history
-                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
+                return history.filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
             };
 
-            // --- Display and UI Functions ---
+            // --- Display Functions ---
 
             const updateUI = () => {
                 if (!selectedEmployee) {
-                    employeeNameDisplay.textContent = 'Please select an employee to start.';
+                    employeeGreeting.classList.remove('visible');
                     punchInBtn.style.display = 'none';
                     punchOutBtn.style.display = 'none';
-                    todayStatusArea.innerHTML = '<p style="text-align: center; color: #777;">Select an employee to view today\'s times.</p>';
+                    todayStatusArea.innerHTML = '<div class="empty-state">Select an employee to view status.</div>';
                     return;
                 }
 
-                const history = loadHistory(); // Reload history for current status checks
+                const history = loadHistory(); 
                 const finishedToday = hasPunchedOutToday(selectedEmployee, history);
 
-                employeeNameDisplay.textContent = `Welcome, **${selectedEmployee}**!`;
+                employeeGreeting.innerHTML = `Hello, <strong>${selectedEmployee}</strong>`;
+                employeeGreeting.classList.add('visible');
 
                 if (activePunch) {
-                    // 1. Employee is currently PUNCHED IN (Active session exists)
+                    // Punched In
                     punchInBtn.style.display = 'none';
-                    punchOutBtn.style.display = 'block';
+                    punchOutBtn.style.display = 'inline-flex';
                 } else if (finishedToday) {
-                    // 2. Employee is PUNCHED OUT and finished for today
+                    // Done for the day
                     punchInBtn.style.display = 'none';
                     punchOutBtn.style.display = 'none';
-                    // Optional: Provide feedback in the status area
-                    todayStatusArea.innerHTML = `
-                        <p style="text-align: center; color: ${PUNCH_OUT_COLOR}; font-weight: 700;">
-                            PUNCH OUT COMPLETE. Workday finished!
-                        </p>`;
                 } else {
-                    // 3. Employee is PUNCHED OUT, but has no records OR has records from previous days only.
-                    punchInBtn.style.display = 'block';
+                    // Ready to start
+                    punchInBtn.style.display = 'inline-flex';
                     punchOutBtn.style.display = 'none';
                 }
                 
@@ -334,85 +475,42 @@
                 const history = loadHistory();
                 const todayEntries = getTodayEntries(selectedEmployee, history);
                 
-                todayStatusArea.innerHTML = ''; 
-                
                 if (todayEntries.length === 0 && !finishedToday) {
-                    todayStatusArea.innerHTML = `<p style="text-align: center; color: ${PUNCH_OUT_COLOR};">Ready to punch in!</p>`;
-                    return;
-                }
-                
-                if (finishedToday) {
-                    // If finishedToday is true, we rely on the logic in updateUI() to display the message,
-                    // but we still show the times. We use the last entry.
-                    const lastEntry = todayEntries.pop();
-                    
-                    let punchInHtml = `
-                        <div class="status-row">
-                            <span class="status-label">Punch In Time:</span>
-                            <span class="status-time">${formatTime(lastEntry.punchInTime)}</span>
-                        </div>`;
-
-                    let punchOutHtml = `
-                        <div class="status-row">
-                            <span class="status-label">Punch Out Time:</span>
-                            <span class="status-time" style="color: ${PUNCH_OUT_COLOR}; font-weight: 700;">${formatTime(lastEntry.punchOutTime)} (Finished)</span>
-                        </div>`;
-                    
-                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
-
-                } else if (activePunch) {
-                    // If activePunch is true (currently punched in)
-                     let punchInHtml = `
-                        <div class="status-row">
-                            <span class="status-label">Punch In Time:</span>
-                            <span class="status-time">${formatTime(activePunch.punchInTime)}</span>
-                        </div>`;
-
-                    let punchOutHtml = `
-                        <div class="status-row">
-                            <span class="status-label">Punch Out Time:</span>
-                            <span class="status-time" style="color: ${PUNCH_IN_COLOR}; font-weight: 700;">ACTIVE (Need to Punch Out)</span>
-                        </div>`;
-                    
-                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
-                }
-
-            };
-
-            
-            // --- CSV Export Function ---
-            const exportHistoryToCSV = () => {
-                const history = loadHistory();
-                if (history.length === 0) {
-                    alert("No data to export!");
+                    todayStatusArea.innerHTML = '<div class="empty-state">No activity recorded today.</div>';
                     return;
                 }
 
-                const header = ["Date", "Employee", "Punch In Time", "Punch Out Time"].join(',');
-                
-                const csvRows = history.map(entry => {
-                    const date = formatDate(entry.punchInTime);
-                    const punchIn = formatTime(entry.punchInTime);
-                    const punchOut = entry.punchOutTime ? formatTime(entry.punchOutTime) : 'N/A';
-                    
-                    return [date, entry.employee, punchIn, punchOut].join(',');
-                });
+                const lastEntry = activePunch || todayEntries[todayEntries.length - 1];
+                if (!lastEntry) return;
 
-                const csvContent = header + '\n' + csvRows.join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a");
-                
-                link.setAttribute("href", URL.createObjectURL(blob));
-                link.setAttribute("download", "punch_history_full_" + new Date().toISOString().slice(0, 10) + ".csv");
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const inTime = formatTime(lastEntry.punchInTime);
+                const outTime = lastEntry.punchOutTime ? formatTime(lastEntry.punchOutTime) : '--:--';
+
+                // Conditional styling logic
+                let statusBadge = '';
+                if (activePunch) {
+                    statusBadge = `<div class="status-badge badge-active">Currently Working</div>`;
+                } else if (finishedToday) {
+                    statusBadge = `<div class="status-badge badge-complete">Shift Complete</div>`;
+                }
+
+                todayStatusArea.innerHTML = `
+                    <div class="status-grid">
+                        <div class="status-card active">
+                            <span class="card-label">Punch In</span>
+                            <span class="card-time">${inTime}</span>
+                        </div>
+                        <div class="status-card ${finishedToday ? 'finished' : ''}">
+                            <span class="card-label">Punch Out</span>
+                            <span class="card-time">${outTime}</span>
+                        </div>
+                    </div>
+                    ${statusBadge}
+                `;
             };
 
-            // --- Event Handlers ---
+            // --- Events ---
 
-            // 1. Employee Selection Handler
             employeeSelect.addEventListener('change', (e) => {
                 selectedEmployee = e.target.value;
                 const history = loadHistory();
@@ -420,54 +518,63 @@
                 updateUI();
             });
 
-            // 2. Punch In Handler
             punchInBtn.addEventListener('click', () => {
                 if (!selectedEmployee) return;
-
                 const history = loadHistory();
-                const now = new Date().toISOString();
                 
-                // Redundant check, but good for safety if UI fails to hide the button
                 if (hasPunchedOutToday(selectedEmployee, history)) {
-                    alert(`${selectedEmployee} has already completed the workday today and cannot punch in again.`);
+                    alert("Workday already completed today.");
                     return;
                 }
 
                 const newEntry = {
                     id: Date.now(), 
                     employee: selectedEmployee,
-                    punchInTime: now,
+                    punchInTime: new Date().toISOString(),
                     punchOutTime: null 
                 };
 
                 history.push(newEntry);
                 saveHistory(history);
-
                 activePunch = newEntry; 
                 updateUI();
             });
 
-            // 3. Punch Out Handler
             punchOutBtn.addEventListener('click', () => {
                 if (!selectedEmployee || !activePunch) return;
-
                 const history = loadHistory();
-                const now = new Date().toISOString();
-
                 const index = history.findIndex(entry => entry.id === activePunch.id);
+                
                 if (index !== -1) {
-                    history[index].punchOutTime = now;
+                    history[index].punchOutTime = new Date().toISOString();
                     saveHistory(history);
-
                     activePunch = null; 
-                    updateUI(); // This call will now detect hasPunchedOutToday = true
+                    updateUI();
                 }
             });
             
-            // 4. Export Button Handler
-            exportBtn.addEventListener('click', exportHistoryToCSV);
+            exportBtn.addEventListener('click', () => {
+                const history = loadHistory();
+                if (history.length === 0) { alert("No data to export!"); return; }
 
-            // --- Initialization ---
+                const header = ["Date", "Employee", "Punch In Time", "Punch Out Time"].join(',');
+                const csvRows = history.map(entry => {
+                    const date = new Date(entry.punchInTime).toLocaleDateString();
+                    const punchIn = new Date(entry.punchInTime).toLocaleTimeString();
+                    const punchOut = entry.punchOutTime ? new Date(entry.punchOutTime).toLocaleTimeString() : 'N/A';
+                    return [date, entry.employee, punchIn, punchOut].join(',');
+                });
+
+                const blob = new Blob([header + '\n' + csvRows.join('\n')], { type: 'text/csv' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "attendance_history.csv";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            // Initial Load
             updateUI(); 
         });
     </script>
