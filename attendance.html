@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Limit Punch Clock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300,400,700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #3f51b5; /* Indigo Blue */
+            --secondary-color: #f5f5f5; /* Light Gray for backgrounds */
+            --text-dark: #333;
+            --text-light: #fff;
+            --punch-in-color: #4caf50; /* Green */
+            --punch-out-color: #f44336; /* Red */
+            --export-color: #00bcd4; /* Cyan */
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 40px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--text-light);
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            width: 90%;
+            max-width: 900px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            text-align: left;
+            color: var(--primary-color);
+            font-weight: 400;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        /* Employee Selection Area */
+        .employee-selector {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8eaf6; 
+            border-radius: 8px;
+        }
+
+        .employee-selector label {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: var(--text-dark);
+            margin-right: 15px;
+        }
+
+        #employee-select {
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            min-width: 280px;
+            appearance: none; 
+            background-color: var(--text-light);
+            cursor: pointer;
+        }
+
+        /* Punch Area */
+        .punch-area {
+            text-align: center;
+            margin-bottom: 0px;
+            padding: 0px 0;
+        }
+
+        #employee-name-display {
+            margin: 10px 0 25px 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-dark);
+            min-height: 24px;
+        }
+
+        /* Buttons */
+        .punch-btn {
+            padding: 12px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--text-light);
+            min-width: 150px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .punch-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .punch-btn.in {
+            background-color: var(--punch-in-color); 
+        }
+
+        .punch-btn.out {
+            background-color: var(--punch-out-color); 
+        }
+
+        #export-csv-btn {
+            background-color: var(--export-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        /* Today's Status Area */
+        #today-status-area {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-height: 100px; 
+        }
+        
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        .status-row:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .status-time {
+            font-weight: 400;
+        }
+        
+        /* Horizontal Rule */
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 25px 0;
+        }
+
+        /* Hidden History Table */
+        #history-area {
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attendance Tracker</h1>
+        
+        <div class="employee-selector">
+            <label for="employee-select">SELECT EMPLOYEE:</label>
+            <select id="employee-select">
+                <option value="" disabled selected>-- Select an Employee --</option>
+                <option value="Alice Johnson">Alice Johnson</option>
+                <option value="Bob Williams">Bob Williams</option>
+                <option value="Charlie Brown">Charlie Brown</option>
+            </select>
+        </div>
+
+        <div id="punch-area" class="punch-area">
+            <div id="employee-name-display"></div>
+            <button id="punch-in-btn" class="punch-btn in" style="display: none;">Punch In</button>
+            <button id="punch-out-btn" class="punch-btn out" style="display: none;">Punch Out</button>
+        </div>
+
+        <!-- <hr> -->
+        
+        <h2>Today's Status ✨</h2>
+        <div id="today-status-area">
+            <p style="text-align: center; color: #777;">Select an employee to view today's times.</p>
+        </div>
+
+        <!-- <div style="text-align: right; margin-top: 20px;">
+            <button id="export-csv-btn" class="punch-btn" style="background-color: var(--export-color); font-size: 0.9em; min-width: auto; padding: 8px 15px;">Download Full History (CSV)</button>
+        </div> -->
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Color Definitions ---
+            const PUNCH_OUT_COLOR = '#f44336'; // Red
+            const PUNCH_IN_COLOR = '#4caf50'; // Green
+
+            // --- DOM Elements ---
+            const employeeSelect = document.getElementById('employee-select');
+            const employeeNameDisplay = document.getElementById('employee-name-display');
+            const punchInBtn = document.getElementById('punch-in-btn');
+            const punchOutBtn = document.getElementById('punch-out-btn');
+            const todayStatusArea = document.getElementById('today-status-area');
+            const exportBtn = document.getElementById('export-csv-btn');
+
+            // --- State Variables ---
+            let selectedEmployee = null;
+            let activePunch = null; 
+
+            // --- Utility Functions ---
+
+            const loadHistory = () => {
+                const historyJson = localStorage.getItem('punchHistory');
+                return historyJson ? JSON.parse(historyJson) : [];
+            };
+
+            const saveHistory = (history) => {
+                localStorage.setItem('punchHistory', JSON.stringify(history));
+            };
+
+            const formatTime = (date) => {
+                if (!date) return '-';
+                return new Date(date).toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+            };
+
+            const formatDate = (date) => {
+                return new Date(date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            };
+            
+            const isToday = (isoDate) => {
+                const today = new Date();
+                const dateToCheck = new Date(isoDate);
+                // Compare Year, Month, Day only
+                return today.getFullYear() === dateToCheck.getFullYear() &&
+                       today.getMonth() === dateToCheck.getMonth() &&
+                       today.getDate() === dateToCheck.getDate();
+            };
+
+            // Checks for any un-punched-out session
+            const checkActivePunch = (employeeName, history) => {
+                const lastEntry = history
+                    .filter(entry => entry.employee === employeeName)
+                    .pop();
+
+                if (lastEntry && !lastEntry.punchOutTime) {
+                    return lastEntry;
+                }
+                return null;
+            };
+            
+            // Checks if the employee has a completed PUNCH IN/PUNCH OUT pair today
+            const hasPunchedOutToday = (employeeName, history) => {
+                // Find all today's entries for the employee
+                const todayEntries = history
+                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
+                
+                // If the last entry exists AND it has a punchOutTime, they have finished for the day.
+                const lastEntry = todayEntries.pop();
+                return lastEntry && lastEntry.punchOutTime !== null;
+            }
+            
+            const getTodayEntries = (employeeName, history) => {
+                return history
+                    .filter(entry => entry.employee === employeeName && isToday(entry.punchInTime));
+            };
+
+            // --- Display and UI Functions ---
+
+            const updateUI = () => {
+                if (!selectedEmployee) {
+                    employeeNameDisplay.textContent = 'Please select an employee to start.';
+                    punchInBtn.style.display = 'none';
+                    punchOutBtn.style.display = 'none';
+                    todayStatusArea.innerHTML = '<p style="text-align: center; color: #777;">Select an employee to view today\'s times.</p>';
+                    return;
+                }
+
+                const history = loadHistory(); // Reload history for current status checks
+                const finishedToday = hasPunchedOutToday(selectedEmployee, history);
+
+                employeeNameDisplay.textContent = `Welcome, **${selectedEmployee}**!`;
+
+                if (activePunch) {
+                    // 1. Employee is currently PUNCHED IN (Active session exists)
+                    punchInBtn.style.display = 'none';
+                    punchOutBtn.style.display = 'block';
+                } else if (finishedToday) {
+                    // 2. Employee is PUNCHED OUT and finished for today
+                    punchInBtn.style.display = 'none';
+                    punchOutBtn.style.display = 'none';
+                    // Optional: Provide feedback in the status area
+                    todayStatusArea.innerHTML = `
+                        <p style="text-align: center; color: ${PUNCH_OUT_COLOR}; font-weight: 700;">
+                            PUNCH OUT COMPLETE. Workday finished!
+                        </p>`;
+                } else {
+                    // 3. Employee is PUNCHED OUT, but has no records OR has records from previous days only.
+                    punchInBtn.style.display = 'block';
+                    punchOutBtn.style.display = 'none';
+                }
+                
+                renderTodayStatus(finishedToday);
+            };
+
+            const renderTodayStatus = (finishedToday) => {
+                const history = loadHistory();
+                const todayEntries = getTodayEntries(selectedEmployee, history);
+                
+                todayStatusArea.innerHTML = ''; 
+                
+                if (todayEntries.length === 0 && !finishedToday) {
+                    todayStatusArea.innerHTML = `<p style="text-align: center; color: ${PUNCH_OUT_COLOR};">Ready to punch in!</p>`;
+                    return;
+                }
+                
+                if (finishedToday) {
+                    // If finishedToday is true, we rely on the logic in updateUI() to display the message,
+                    // but we still show the times. We use the last entry.
+                    const lastEntry = todayEntries.pop();
+                    
+                    let punchInHtml = `
+                        <div class="status-row">
+                            <span class="status-label">Punch In Time:</span>
+                            <span class="status-time">${formatTime(lastEntry.punchInTime)}</span>
+                        </div>`;
+
+                    let punchOutHtml = `
+                        <div class="status-row">
+                            <span class="status-label">Punch Out Time:</span>
+                            <span class="status-time" style="color: ${PUNCH_OUT_COLOR}; font-weight: 700;">${formatTime(lastEntry.punchOutTime)} (Finished)</span>
+                        </div>`;
+                    
+                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
+
+                } else if (activePunch) {
+                    // If activePunch is true (currently punched in)
+                     let punchInHtml = `
+                        <div class="status-row">
+                            <span class="status-label">Punch In Time:</span>
+                            <span class="status-time">${formatTime(activePunch.punchInTime)}</span>
+                        </div>`;
+
+                    let punchOutHtml = `
+                        <div class="status-row">
+                            <span class="status-label">Punch Out Time:</span>
+                            <span class="status-time" style="color: ${PUNCH_IN_COLOR}; font-weight: 700;">ACTIVE (Need to Punch Out)</span>
+                        </div>`;
+                    
+                    todayStatusArea.innerHTML = punchInHtml + punchOutHtml;
+                }
+
+            };
+
+            
+            // --- CSV Export Function ---
+            const exportHistoryToCSV = () => {
+                const history = loadHistory();
+                if (history.length === 0) {
+                    alert("No data to export!");
+                    return;
+                }
+
+                const header = ["Date", "Employee", "Punch In Time", "Punch Out Time"].join(',');
+                
+                const csvRows = history.map(entry => {
+                    const date = formatDate(entry.punchInTime);
+                    const punchIn = formatTime(entry.punchInTime);
+                    const punchOut = entry.punchOutTime ? formatTime(entry.punchOutTime) : 'N/A';
+                    
+                    return [date, entry.employee, punchIn, punchOut].join(',');
+                });
+
+                const csvContent = header + '\n' + csvRows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                
+                link.setAttribute("href", URL.createObjectURL(blob));
+                link.setAttribute("download", "punch_history_full_" + new Date().toISOString().slice(0, 10) + ".csv");
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            // --- Event Handlers ---
+
+            // 1. Employee Selection Handler
+            employeeSelect.addEventListener('change', (e) => {
+                selectedEmployee = e.target.value;
+                const history = loadHistory();
+                activePunch = checkActivePunch(selectedEmployee, history); 
+                updateUI();
+            });
+
+            // 2. Punch In Handler
+            punchInBtn.addEventListener('click', () => {
+                if (!selectedEmployee) return;
+
+                const history = loadHistory();
+                const now = new Date().toISOString();
+                
+                // Redundant check, but good for safety if UI fails to hide the button
+                if (hasPunchedOutToday(selectedEmployee, history)) {
+                    alert(`${selectedEmployee} has already completed the workday today and cannot punch in again.`);
+                    return;
+                }
+
+                const newEntry = {
+                    id: Date.now(), 
+                    employee: selectedEmployee,
+                    punchInTime: now,
+                    punchOutTime: null 
+                };
+
+                history.push(newEntry);
+                saveHistory(history);
+
+                activePunch = newEntry; 
+                updateUI();
+            });
+
+            // 3. Punch Out Handler
+            punchOutBtn.addEventListener('click', () => {
+                if (!selectedEmployee || !activePunch) return;
+
+                const history = loadHistory();
+                const now = new Date().toISOString();
+
+                const index = history.findIndex(entry => entry.id === activePunch.id);
+                if (index !== -1) {
+                    history[index].punchOutTime = now;
+                    saveHistory(history);
+
+                    activePunch = null; 
+                    updateUI(); // This call will now detect hasPunchedOutToday = true
+                }
+            });
+            
+            // 4. Export Button Handler
+            exportBtn.addEventListener('click', exportHistoryToCSV);
+
+            // --- Initialization ---
+            updateUI(); 
+        });
+    </script>
+</body>
+</html>
